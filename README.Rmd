@@ -1,5 +1,5 @@
 ---
-title: "DS 202 Final Project"
+title: "Stat 579 Final Project Structure"
 output: 
   html_document: default
   github_document:
