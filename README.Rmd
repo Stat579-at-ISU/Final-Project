@@ -1,6 +1,7 @@
 ---
 title: "DS 202 Final Project"
 output: 
+  html_document: default
   github_document:
     number_section: FALSE
 ---
@@ -11,29 +12,28 @@ output:
 library(knitr)
 knitr::opts_chunk$set(echo = FALSE, warning = TRUE)
 
-
-knit_hooks$set( fig.cap = function(before, options, envir) {
-  if ( before ) {
-    chr <- sprintf("<p><small><strong><a name='fig:%s' value = %d>Figure %d</a></strong>: %s</small></p>", options$label, options$fig.num, options$fig.num, options$fig.cap)
-    chr <- sprintf("<p><small><strong><a name='fig:%s'>%s</a></strong>: %s</small></p>", options$label, options$label,  options$fig.cap)
-    
-    return(chr)
-  }
+###### delete the lines below if you knit to pdf or word
+knit_hooks$set(plot = function(x, options) {
+  chr <- sprintf("<p><small><strong><a name='fig:%s' value = %d>%s</a></strong>: %s</small></p>", options$label, options$fig.num, options$label, options$fig.cap)
+  paste('<figure><figcaption>', chr, '</figcaption><img src="',
+        opts_knit$get('base.url'), paste(x, collapse = '.'),
+        '"></figure>',
+        sep = '')
 })
 
 
 chunkref <- local({
-  function(chunklabel) {
-    sprintf('[%s](#%s)', chunklabel, paste0("fig:",chunklabel) )
-  }  
+  function(chr) {
+  }
 })
+################# delete above lines if you knit to pdf or word
 
 library(ggplot2)
 library(dplyr)
 ```
 
 
-This repository serves as a starter repo for your final project, and this Rmd is supposed to serve as a starter file for your project report.
+This repository serves as a starter repo for your final project, you can use this Rmd file to serve as a starter file for your project report.
 
 ## Part I: Repo Structure {.unnumbered}
 
@@ -83,13 +83,20 @@ Somewhere at the beginning of your project, include a code chunk that includes a
 
 What are the variables that you will be using in the main part of the report? What are their ranges? You could include a table with variable names, a short explanation, and (very broad) summary statistics.
 
+```{r table, echo=FALSE}
+# read data in
+data <- read.csv("data-raw/rawdata.csv")
+
+summary(data) %>% kable(caption="This is a table caption. Follow the same pattern as for figures, i.e. the first sentence describes the structure of the table, the second and third sentence summarise the content and a follow-up.")
+```
+
 # Results
 
 Each line of exploration is supposed to be featured in one of the Results sections. Make sure to change to more interesting section headers!
 
 ## Results 1
 
-In your write-up, make sure to refer to all of the figures you create. You can include a hyperlink to the [scatterplot](#fig:scatterplot) by using the name of the code chunk (make sure, to give each code chunk a different name). In your markdown document you can create this link either by calling the function `chunkref` with the name of the code chunk in quotes, i.e. `` r chunkref("scatterplot") `` or by using the markdown expression `[scatterplot](#fig:scatterplot)`. Similarly, we can refer to the `r chunkref("2nd scatterplot")`. Note that the figure captions appear above the figures - this saves us from having to scroll up after following the link.
+In your write-up, make sure to refer to all of the figures you create. You can include a hyperlink to each figure by using the name of the code chunk (make sure, to give each code chunk a different name), i.e.  [scatterplot](#fig:scatterplot) is a link to the first scatterplot, and [this expression](#fig:2nd-scatterplot) refers to the second scatterplot. Note that the figure captions appear above the figures - this saves us from having to scroll up after following the link.
 
 ```{r scatterplot, echo=FALSE, fig.cap="This is the figure caption. Make sure to use the description we practised in the homework: first sentence describes structure of the plot, second sentence describes main finding, third sentence describes outliers/follow-up.", message = FALSE}
 
@@ -98,7 +105,7 @@ mtcars %>%
   geom_point()
 ```
 
-```{r 2nd scatterplot, echo=FALSE, fig.cap="This is the figure caption. Make sure to use the description we practised in the homework: first sentence describes structure of the plot, second sentence describes main finding, third sentence describes outliers/follow-up.", message = FALSE}
+```{r 2nd-scatterplot, echo=FALSE, fig.cap="This is the caption for the second scatterplot.", message = FALSE}
 
 mtcars %>% 
   ggplot(aes(x = wt, y = mpg)) + 
